@@ -40,7 +40,8 @@ export async function registerService(input: RegisterInput) {
 		email: created.email,
 		role: created.role,
 	});
-	return { user: created, token };
+	const { passwordHash: _pw, ...safeUser } = created as any;
+	return { user: safeUser, token };
 }
 
 export async function loginService(input: LoginInput) {
@@ -51,7 +52,10 @@ export async function loginService(input: LoginInput) {
 	if (!rows.length)
 		throw Object.assign(new Error("Invalid credentials"), { status: 401 });
 	const user = rows[0];
-	const match = await bcrypt.compare(input.password, user.passwordHash);
+	const match = await bcrypt.compare(
+		input.password,
+		(user as any).passwordHash
+	);
 	if (!match)
 		throw Object.assign(new Error("Invalid credentials"), { status: 401 });
 	const token = signToken({
@@ -59,5 +63,6 @@ export async function loginService(input: LoginInput) {
 		email: user.email,
 		role: user.role,
 	});
-	return { user, token };
+	const { passwordHash: _pw2, ...safeUser } = user as any;
+	return { user: safeUser, token };
 }
