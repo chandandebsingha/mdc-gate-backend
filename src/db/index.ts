@@ -25,3 +25,4 @@ export * from "./schema/payments";
 export * from "./schema/visitors";
 export * from "./schema/familyMembers";
 export * from "./schema/userDetails";
+export * from "./schema/society";
