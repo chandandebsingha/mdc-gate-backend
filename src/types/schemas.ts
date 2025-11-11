@@ -21,8 +21,12 @@ export const loginSchema = z.object({
 
 // Complaints
 export const createComplaintSchema = z.object({
-	title: z.string().min(3),
+	category: z.string().min(1),
+	subcategory: z.string().min(1),
+	requestType: z.enum(["unit", "community"]),
+	isUrgent: z.boolean().optional(),
 	description: z.string().min(5),
+	imageUrl: z.string().url().optional(),
 });
 export const updateComplaintStatusSchema = z.object({
 	status: z.enum(ComplaintStatuses),

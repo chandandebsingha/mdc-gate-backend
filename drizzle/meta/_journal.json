@@ -22,6 +22,13 @@
       "when": 1762778642248,
       "tag": "0002_loose_silver_samurai",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1762847519282,
+      "tag": "0003_freezing_songbird",
+      "breakpoints": true
     }
   ]
 }

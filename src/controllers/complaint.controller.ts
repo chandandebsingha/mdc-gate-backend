@@ -10,11 +10,30 @@ import { RequestWithUser } from "../types";
 export const createComplaint = async (req: RequestWithUser, res: Response) => {
 	try {
 		const userId = req.user!.userId;
-		const { title, description } = req.body as {
-			title: string;
+		const {
+			category,
+			subcategory,
+			requestType,
+			isUrgent,
+			description,
+			imageUrl,
+		} = req.body as {
+			category: string;
+			subcategory: string;
+			requestType: string;
+			isUrgent?: boolean;
 			description: string;
+			imageUrl?: string;
 		};
-		const data = await createComplaintService({ userId, title, description });
+		const data = await createComplaintService({
+			userId,
+			category,
+			subcategory,
+			requestType,
+			isUrgent: isUrgent ? 1 : 0,
+			description,
+			imageUrl,
+		});
 		res.status(201).json(success(data, "Complaint created"));
 	} catch (err) {
 		res.status(500).json(failure("Failed to create complaint", err));
