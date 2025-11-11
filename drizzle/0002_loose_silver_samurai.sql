@@ -1,0 +1,1 @@
+ALTER TABLE "user_details" ADD COLUMN "state" varchar(100) NOT NULL;

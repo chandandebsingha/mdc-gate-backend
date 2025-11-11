@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { ComplaintStatuses, AuthorityValues, OccupancyStatusValues } from "../utils/constants";
+import {
+	ComplaintStatuses,
+	AuthorityValues,
+	OccupancyStatusValues,
+} from "../utils/constants";
 
 export const idParamSchema = z.object({ id: z.string().regex(/^\d+$/) });
 
@@ -50,6 +54,7 @@ export const addFamilyMemberSchema = z.object({
 // User details
 export const upsertUserDetailsSchema = z.object({
 	country: z.string().min(1),
+	state: z.string().min(1),
 	city: z.string().min(1),
 	society: z.string().min(1),
 	buildingName: z.string().min(1),

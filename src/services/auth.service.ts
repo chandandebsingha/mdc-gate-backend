@@ -66,3 +66,37 @@ export async function loginService(input: LoginInput) {
 	const { passwordHash: _pw2, ...safeUser } = user as any;
 	return { user: safeUser, token };
 }
+
+export async function superAdminLoginService(input: LoginInput) {
+	const rows = await db
+		.select()
+		.from(users)
+		.where(eq(users.email, input.email));
+	if (!rows.length)
+		throw Object.assign(new Error("Invalid credentials"), { status: 401 });
+
+	const user = rows[0];
+
+	// Check if user has super_admin role
+	if (user.role !== "super_admin") {
+		throw Object.assign(
+			new Error("Access denied. Super admin privileges required."),
+			{ status: 403 }
+		);
+	}
+
+	const match = await bcrypt.compare(
+		input.password,
+		(user as any).passwordHash
+	);
+	if (!match)
+		throw Object.assign(new Error("Invalid credentials"), { status: 401 });
+
+	const token = signToken({
+		userId: user.id,
+		email: user.email,
+		role: user.role,
+	});
+	const { passwordHash: _pw2, ...safeUser } = user as any;
+	return { user: safeUser, token };
+}
