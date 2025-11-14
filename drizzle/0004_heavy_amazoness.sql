@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "role_status" varchar(20) DEFAULT 'approved';

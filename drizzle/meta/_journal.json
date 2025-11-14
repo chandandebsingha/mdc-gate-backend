@@ -29,6 +29,13 @@
       "when": 1762847519282,
       "tag": "0003_freezing_songbird",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1762931419249,
+      "tag": "0004_heavy_amazoness",
+      "breakpoints": true
     }
   ]
 }

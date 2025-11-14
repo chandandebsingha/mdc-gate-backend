@@ -7,6 +7,7 @@ import visitorRoutes from "./visitor.routes";
 import familyRoutes from "./family.routes";
 import societyRoutes from "./society.routes";
 import userDetailsRoutes from "./userDetails.routes";
+import adminRoutes from "./admin.routes";
 
 const router = Router();
 router.use("/auth", authRoutes);
@@ -17,5 +18,6 @@ router.use("/visitors", visitorRoutes);
 router.use("/family", familyRoutes);
 router.use("/societies", societyRoutes);
 router.use("/user-details", userDetailsRoutes);
+router.use("/admin", adminRoutes);
 
 export default router;
