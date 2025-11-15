@@ -24,8 +24,15 @@ export const verifyToken = (
 			return res.status(401).json(failure("Unauthorized"));
 		}
 		const token = authHeader.replace("Bearer ", "");
-		const decoded = jwt.verify(token, env.JWT_SECRET) as AuthPayload;
-		req.user = decoded;
+		const decoded = jwt.verify(token, env.JWT_SECRET) as any;
+		// Ensure userId is a number to avoid passing non-numeric values to DB
+		if (decoded && decoded.userId !== undefined) {
+			decoded.userId = Number(decoded.userId);
+			if (!Number.isInteger(decoded.userId)) {
+				return res.status(401).json(failure("Unauthorized"));
+			}
+		}
+		req.user = decoded as AuthPayload;
 		next();
 	} catch (err) {
 		return res.status(401).json(failure("Unauthorized", err));

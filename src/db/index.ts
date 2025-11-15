@@ -7,6 +7,17 @@ const pool = new Pool({ connectionString: env.DATABASE_URL });
 pool.on("error", (err) => {
 	logger.error("DB pool error:", err);
 });
+// Instrument pool.query to log SQL and params for debugging invalid param errors
+const originalQuery = pool.query.bind(pool) as any;
+pool.query = function (text: any, params?: any, callback?: any) {
+	try {
+		logger.info('[DB QUERY]', typeof text === 'string' ? text : text && text.text ? text.text : text, params);
+	} catch (e) {
+		// ignore logging errors
+	}
+	return originalQuery(text, params, callback);
+} as any;
+
 export const db = drizzle(pool);
 export async function testDbConnection(): Promise<void> {
 	const client = await pool.connect();
