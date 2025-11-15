@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
 	createComplaint,
 	getComplaintsByUser,
+	getComplaintsBySociety,
 	updateComplaintStatus,
 } from "../controllers/complaint.controller";
 import { verifyToken } from "../middleware/authMiddleware";
@@ -20,6 +21,7 @@ router.post(
 	createComplaint
 );
 router.get("/", verifyToken, getComplaintsByUser);
+router.get("/society/all", verifyToken, getComplaintsBySociety);
 router.patch(
 	"/:id/status",
 	verifyToken,
@@ -28,3 +30,4 @@ router.patch(
 	updateComplaintStatus
 );
 export default router;
+

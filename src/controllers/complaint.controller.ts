@@ -3,6 +3,7 @@ import { success, failure } from "../utils/response";
 import {
 	createComplaintService,
 	getComplaintsByUserService,
+	getComplaintsBySocietyService,
 	updateComplaintStatusService,
 } from "../services/complaint.service";
 import { RequestWithUser } from "../types";
@@ -53,6 +54,22 @@ export const getComplaintsByUser = async (
 	}
 };
 
+export const getComplaintsBySociety = async (
+	req: RequestWithUser,
+	res: Response
+) => {
+	try {
+		const managerId = req.user!.userId;
+		const data = await getComplaintsBySocietyService(managerId);
+		res.json(success(data));
+	} catch (err: any) {
+		console.error("[getComplaintsBySociety] Error:", err);
+		res.status(500).json(
+			failure("Failed to fetch society complaints", err?.message || err)
+		);
+	}
+};
+
 export const updateComplaintStatus = async (
 	req: RequestWithUser,
 	res: Response
@@ -72,3 +89,4 @@ export const updateComplaintStatus = async (
 		res.status(500).json(failure("Failed to update complaint", err));
 	}
 };
+
