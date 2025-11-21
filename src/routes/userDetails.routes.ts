@@ -10,11 +10,17 @@ import { upsertUserDetailsSchema } from "../types/schemas";
 
 const router = Router();
 router.get("/myprofile", verifyToken, getMyDetails);
+router.post(
+	"/myprofile",
+	verifyToken,
+	validateBody(upsertUserDetailsSchema),
+	upsertMyDetails
+);
 router.put(
 	"/myprofile",
 	verifyToken,
 	validateBody(upsertUserDetailsSchema),
 	upsertMyDetails
 );
-router.get("/form-options", verifyToken, getFormOptions);
+router.get("/form-options", getFormOptions);
 export default router;

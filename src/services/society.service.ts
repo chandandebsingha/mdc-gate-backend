@@ -1,3 +1,25 @@
+export async function getSocietyIdService(
+	country: string,
+	state: string,
+	city: string,
+	societyName: string
+) {
+	const [result] = await db
+		.select({ id: society.id })
+		.from(society)
+		.where(
+			and(
+				eq(society.country, country),
+				eq(society.state, state),
+				eq(society.city, city),
+				eq(society.society, societyName)
+			)
+		);
+	if (!result) {
+		throw Object.assign(new Error("Society not found"), { status: 404 });
+	}
+	return result;
+}
 import { db } from "../db";
 import { society } from "../db/schema/society";
 import { eq, and } from "drizzle-orm";

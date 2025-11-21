@@ -9,6 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { InferModel } from "drizzle-orm";
 import { users } from "./users";
+import { society } from "./society";
 
 export const authorityEnum = pgEnum("authority", [
 	"owner",
@@ -32,6 +33,9 @@ export const userDetails = pgTable("user_details", {
 	state: varchar("state", { length: 100 }).notNull(),
 	city: varchar("city", { length: 100 }).notNull(),
 	society: varchar("society", { length: 150 }).notNull(),
+	societyId: integer("society_id")
+		.notNull()
+		.references(() => society.id),
 	buildingName: varchar("building_name", { length: 150 }).notNull(),
 	block: varchar("block", { length: 50 }).notNull(),
 	authority: authorityEnum("authority").notNull().default("owner"),

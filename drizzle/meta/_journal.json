@@ -36,6 +36,20 @@
       "when": 1762931419249,
       "tag": "0004_heavy_amazoness",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1763445858118,
+      "tag": "0005_boring_silverclaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1763533663273,
+      "tag": "0006_married_adam_warlock",
+      "breakpoints": true
     }
   ]
 }

@@ -7,6 +7,9 @@ import {
 	updateComplaintStatusService,
 } from "../services/complaint.service";
 import { RequestWithUser } from "../types";
+import { db } from "../db";
+import { userDetails } from "../db/schema/userDetails";
+import { eq } from "drizzle-orm";
 
 export const createComplaint = async (req: RequestWithUser, res: Response) => {
 	try {
@@ -26,6 +29,24 @@ export const createComplaint = async (req: RequestWithUser, res: Response) => {
 			description: string;
 			imageUrl?: string;
 		};
+
+		// Fetch userDetails to get societyId
+		const userDetailsRow = await db
+			.select()
+			.from(userDetails)
+			.where(eq(userDetails.userId, userId))
+			.limit(1);
+		if (!userDetailsRow || userDetailsRow.length === 0) {
+			return res
+				.status(400)
+				.json(failure("", "User details not found for societyId"));
+		}
+		const societyId = userDetailsRow[0].societyId;
+		if (!societyId) {
+			return res
+				.status(400)
+				.json(failure("", "societyId not found in user details"));
+		}
 		const data = await createComplaintService({
 			userId,
 			category,
@@ -34,6 +55,7 @@ export const createComplaint = async (req: RequestWithUser, res: Response) => {
 			isUrgent: isUrgent ? 1 : 0,
 			description,
 			imageUrl,
+			societyId,
 		});
 		res.status(201).json(success(data, "Complaint created"));
 	} catch (err) {
@@ -64,9 +86,9 @@ export const getComplaintsBySociety = async (
 		res.json(success(data));
 	} catch (err: any) {
 		console.error("[getComplaintsBySociety] Error:", err);
-		res.status(500).json(
-			failure("Failed to fetch society complaints", err?.message || err)
-		);
+		res
+			.status(500)
+			.json(failure("Failed to fetch society complaints", err?.message || err));
 	}
 };
 
@@ -89,4 +111,3 @@ export const updateComplaintStatus = async (
 		res.status(500).json(failure("Failed to update complaint", err));
 	}
 };
-

@@ -11,21 +11,25 @@ import {
 	getSocieties,
 	getBuildings,
 	getBlocks,
+	getSocietyId,
 } from "../controllers/society.controller";
 import { verifyToken } from "../middleware/authMiddleware";
 
 const router = Router();
 
-// All society routes require authentication
-router.use(verifyToken);
-
-// Dropdown options routes
+// Dropdown options routes (public)
 router.get("/dropdowns/countries", getCountries);
 router.get("/dropdowns/states", getStates);
 router.get("/dropdowns/cities", getCities);
 router.get("/dropdowns/societies", getSocieties);
 router.get("/dropdowns/buildings", getBuildings);
 router.get("/dropdowns/blocks", getBlocks);
+
+// Get societyId by details (public)
+router.get("/id", getSocietyId);
+
+// All other society routes require authentication
+router.use(verifyToken);
 
 // CRUD routes
 router.post("/", createSociety);

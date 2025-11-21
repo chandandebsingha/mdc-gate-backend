@@ -7,7 +7,12 @@ export async function getUserDetailsByUserId(userId: number) {
 		.select()
 		.from(userDetails)
 		.where(eq(userDetails.userId, userId));
-	return rows[0] || null;
+	if (!rows[0]) return null;
+	// Return all fields, but add societyId as alias for frontend
+	return {
+		...rows[0],
+		societyId: rows[0].societyId,
+	};
 }
 
 export async function upsertUserDetailsByUserId(
@@ -23,6 +28,7 @@ export async function upsertUserDetailsByUserId(
 				state: input.state,
 				city: input.city,
 				society: input.society,
+				societyId: input.societyId,
 				buildingName: input.buildingName,
 				block: input.block,
 				authority: input.authority ?? existing.authority,
@@ -35,7 +41,7 @@ export async function upsertUserDetailsByUserId(
 	} else {
 		const [created] = await db
 			.insert(userDetails)
-			.values({ userId, ...input })
+			.values({ userId, ...input, societyId: input.societyId })
 			.returning();
 		return created;
 	}

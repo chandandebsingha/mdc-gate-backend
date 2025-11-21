@@ -1,3 +1,29 @@
+import { getSocietyIdService } from "../services/society.service";
+// Get societyId by details
+export async function getSocietyId(req: Request, res: Response) {
+	try {
+		const { country, state, city, society } = req.query;
+		if (!country || typeof country !== "string") {
+			return res.status(400).json(failure("Country is required"));
+		}
+		if (!state || typeof state !== "string") {
+			return res.status(400).json(failure("State is required"));
+		}
+		if (!city || typeof city !== "string") {
+			return res.status(400).json(failure("City is required"));
+		}
+		if (!society || typeof society !== "string") {
+			return res.status(400).json(failure("Society is required"));
+		}
+		const result = await getSocietyIdService(country, state, city, society);
+		res.json(success(result, "Society ID fetched successfully"));
+	} catch (err: any) {
+		const status = err?.status || 500;
+		res
+			.status(status)
+			.json(failure(err.message || "Failed to fetch society ID", err));
+	}
+}
 import { Request, Response } from "express";
 import { z } from "zod";
 import { failure, success } from "../utils/response";

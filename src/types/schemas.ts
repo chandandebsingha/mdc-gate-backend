@@ -61,6 +61,7 @@ export const upsertUserDetailsSchema = z.object({
 	state: z.string().min(1),
 	city: z.string().min(1),
 	society: z.string().min(1),
+	societyId: z.number(),
 	buildingName: z.string().min(1),
 	block: z.string().min(1),
 	authority: z.enum(AuthorityValues).optional(),
