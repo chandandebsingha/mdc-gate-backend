@@ -6,6 +6,32 @@ import {
 	registerService,
 	superAdminLoginService,
 } from "../services/auth.service";
+import { getUserDetailsByUserId } from "../services/userDetails.service";
+// GET /api/auth/me
+export async function getMe(req: any, res: Response) {
+	try {
+		const userId = req.user?.userId;
+		if (!userId) return res.status(401).json(failure("Unauthorized"));
+		const user = {
+			id: userId,
+			email: req.user?.email,
+			role: req.user?.role,
+		};
+
+		const details = await getUserDetailsByUserId(userId);
+
+		// Return all fields for robust frontend detection
+		res.json(
+			success({
+				...user,
+				...details,
+				details,
+			})
+		);
+	} catch (err: any) {
+		res.status(500).json(failure("Failed to fetch profile", err));
+	}
+}
 
 const registerSchema = z.object({
 	name: z.string().min(1),
