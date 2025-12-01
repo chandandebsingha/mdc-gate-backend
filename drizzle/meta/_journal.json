@@ -64,6 +64,13 @@
       "when": 1764575029388,
       "tag": "0008_mysterious_grandmaster",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1764595367661,
+      "tag": "0009_many_bastion",
+      "breakpoints": true
     }
   ]
 }

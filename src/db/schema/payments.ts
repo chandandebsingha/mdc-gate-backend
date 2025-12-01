@@ -32,6 +32,7 @@ export const payments = pgTable("payments", {
 	paymentMethod: varchar("payment_method", { length: 50 }),
 	period: varchar("period", { length: 50 }),
 	description: varchar("description"),
+	projectId: integer("project_id"),
 
 	updatedAt: timestamp("updated_at", { withTimezone: true })
 		.defaultNow()

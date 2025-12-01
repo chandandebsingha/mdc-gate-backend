@@ -41,6 +41,19 @@ export const createPaymentSchema = z.object({
 	paymentType: z.string().min(3),
 });
 
+export const createPaymentRequestSchema = z.object({
+	requests: z.array(
+		z.object({
+			userId: z.number(),
+			societyId: z.number(),
+			amount: z.number(),
+			description: z.string().min(1),
+			status: z.string().default("pending"),
+			paymentType: z.string().default("split_payment"),
+		})
+	),
+});
+
 // Visitors
 export const approveVisitorSchema = z.object({
 	visitorName: z.string().min(1),
@@ -78,5 +91,8 @@ export type UpdateComplaintStatusInput = z.infer<
 	typeof updateComplaintStatusSchema
 >;
 export type CreatePaymentInput = z.infer<typeof createPaymentSchema>;
+export type CreatePaymentRequestInput = z.infer<
+	typeof createPaymentRequestSchema
+>;
 export type ApproveVisitorInput = z.infer<typeof approveVisitorSchema>;
 export type AddFamilyMemberInput = z.infer<typeof addFamilyMemberSchema>;
