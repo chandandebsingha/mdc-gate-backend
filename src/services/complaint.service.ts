@@ -78,9 +78,7 @@ export const getComplaintsBySocietyService = async (managerId: number) => {
 		const userIds = usersInSociety.map((u) => u.userId);
 
 		if (userIds.length === 0) {
-			console.log(
-				`[getComplaintsBySocietyService] No users found in society`
-			);
+			console.log(`[getComplaintsBySocietyService] No users found in society`);
 			return [];
 		}
 
@@ -121,16 +119,12 @@ export const getComplaintsBySocietyService = async (managerId: number) => {
 
 export const updateComplaintStatusService = async (
 	id: number,
-	status: string,
-	userId?: number
+	status: string
 ) => {
-	const where = userId
-		? and(eq(complaints.id, id), eq(complaints.userId, userId))
-		: eq(complaints.id, id);
 	const [updated] = await db
 		.update(complaints)
 		.set({ status })
-		.where(where)
+		.where(eq(complaints.id, id))
 		.returning();
 	return updated;
 };

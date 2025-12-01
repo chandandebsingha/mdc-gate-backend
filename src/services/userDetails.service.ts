@@ -1,5 +1,6 @@
 import { db } from "../db";
 import { userDetails, NewUserDetails } from "../db/schema/userDetails";
+import { users } from "../db/schema/users";
 import { eq } from "drizzle-orm";
 
 export async function getUserDetailsByUserId(userId: number) {
@@ -37,12 +38,27 @@ export async function upsertUserDetailsByUserId(
 			})
 			.where(eq(userDetails.userId, userId))
 			.returning();
+
+		// Also persist societyId to users table (link user to society)
+		if (input.societyId && Number.isInteger(Number(input.societyId))) {
+			await db
+				.update(users)
+				.set({ societyId: Number(input.societyId) })
+				.where(eq(users.id, userId));
+		}
 		return updated;
 	} else {
 		const [created] = await db
 			.insert(userDetails)
 			.values({ userId, ...input, societyId: input.societyId })
 			.returning();
+		// Mirror societyId into users table
+		if (input.societyId && Number.isInteger(Number(input.societyId))) {
+			await db
+				.update(users)
+				.set({ societyId: Number(input.societyId) })
+				.where(eq(users.id, userId));
+		}
 		return created;
 	}
 }

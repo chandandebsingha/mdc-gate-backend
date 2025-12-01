@@ -97,14 +97,57 @@ export const updateComplaintStatus = async (
 	res: Response
 ) => {
 	try {
-		const userId = req.user?.userId; // allow admin to update without matching userId (could add role check)
+		const userId = req.user?.userId;
+		const userRole = req.user?.role;
 		const { id } = req.params as { id: string };
 		const { status } = req.body as { status: string };
-		const updated = await updateComplaintStatusService(
-			Number(id),
-			status,
-			userId
-		);
+
+		// Fetch complaint to get its societyId
+		const complaintRow = await db
+			.select()
+			.from(require("../db/schema/complaints").complaints)
+			.where(
+				require("drizzle-orm").eq(
+					require("../db/schema/complaints").complaints.id,
+					Number(id)
+				)
+			)
+			.limit(1);
+		if (!complaintRow || complaintRow.length === 0) {
+			return res.status(404).json(failure("Complaint not found"));
+		}
+		const complaint = complaintRow[0];
+
+		// Fetch manager's userDetails to get their societyId
+		const userDetailsRow = await db
+			.select()
+			.from(require("../db/schema/userDetails").userDetails)
+			.where(
+				require("drizzle-orm").eq(
+					require("../db/schema/userDetails").userDetails.userId,
+					userId
+				)
+			)
+			.limit(1);
+		if (!userDetailsRow || userDetailsRow.length === 0) {
+			return res.status(403).json(failure("User details not found"));
+		}
+		const managerSocietyId = userDetailsRow[0].societyId;
+
+		// Allow update if:
+		// - user is the complaint owner
+		// - user is a manager and in the same society as the complaint
+		const isOwner = complaint.userId === userId;
+		const isManagerOfSociety =
+			userRole === "manager" && complaint.societyId === managerSocietyId;
+
+		if (!isOwner && !isManagerOfSociety) {
+			return res
+				.status(403)
+				.json(failure("Not authorized to update this complaint"));
+		}
+
+		const updated = await updateComplaintStatusService(Number(id), status);
 		if (!updated) return res.status(404).json(failure("Complaint not found"));
 		res.json(success(updated, "Status updated"));
 	} catch (err) {

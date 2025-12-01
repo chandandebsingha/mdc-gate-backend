@@ -50,6 +50,20 @@
       "when": 1763533663273,
       "tag": "0006_married_adam_warlock",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1764322426731,
+      "tag": "0007_gorgeous_ted_forrester",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1764575029388,
+      "tag": "0008_mysterious_grandmaster",
+      "breakpoints": true
     }
   ]
 }
