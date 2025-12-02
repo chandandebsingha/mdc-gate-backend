@@ -71,6 +71,27 @@
       "when": 1764595367661,
       "tag": "0009_many_bastion",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1764601614544,
+      "tag": "0010_dazzling_leper_queen",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1764602133358,
+      "tag": "0011_spotty_jubilee",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1764602159759,
+      "tag": "0012_odd_ravenous",
+      "breakpoints": true
     }
   ]
 }

@@ -4,6 +4,7 @@ import {
 	listPayments,
 	createPaymentRequests,
 	getPendingPaymentsByProject,
+	getPaymentsByGroup,
 } from "../controllers/payment.controller";
 import { verifyToken } from "../middleware/authMiddleware";
 import { validateBody } from "../middleware/validateRequest";
@@ -26,5 +27,5 @@ router.post(
 	createPayment
 );
 router.get("/", verifyToken, listPayments);
-router.get("/pending-by-project", verifyToken, getPendingPaymentsByProject);
+router.get("/group/:groupId", verifyToken, getPaymentsByGroup);
 export default router;

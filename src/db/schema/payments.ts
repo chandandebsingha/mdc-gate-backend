@@ -9,6 +9,7 @@ import {
 import { InferModel } from "drizzle-orm";
 import { users } from "./users";
 import { society } from "./society";
+import { paymentGroup } from "./paymentgroup";
 
 export const payments = pgTable("payments", {
 	id: serial("id").primaryKey(),
@@ -32,7 +33,9 @@ export const payments = pgTable("payments", {
 	paymentMethod: varchar("payment_method", { length: 50 }),
 	period: varchar("period", { length: 50 }),
 	description: varchar("description"),
-	projectId: integer("project_id"),
+	paymentGroupId: integer("payment_group_id")
+		.notNull()
+		.references(() => paymentGroup.id),
 
 	updatedAt: timestamp("updated_at", { withTimezone: true })
 		.defaultNow()

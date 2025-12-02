@@ -5,6 +5,7 @@ import {
 	listPaymentsByUserService,
 	createBulkPaymentRequestsService,
 	getPendingPaymentsByProjectService,
+	getPaymentsByGroupIdService,
 } from "../services/payment.service";
 import { RequestWithUser } from "../types";
 
@@ -37,23 +38,53 @@ export const createPaymentRequests = async (
 	res: Response
 ) => {
 	try {
-		const { requests } = req.body as {
-			requests: Array<{
-				userId: number;
-				societyId: number;
-				amount: number;
-				description: string;
-				status: string;
-				paymentType: string;
-			}>;
-		};
-		const data = await createBulkPaymentRequestsService({ requests });
+		const { requests, projectId, projectName, projectDescription } =
+			req.body as {
+				requests: Array<{
+					userId: number;
+					societyId: number;
+					amount: number;
+					description: string;
+					status: string;
+					paymentType: string;
+				}>;
+				projectId?: number;
+				projectName?: string;
+				projectDescription?: string;
+			};
 
+		if (!req.user?.userId) {
+			return res.status(401).json(failure("User not authenticated"));
+		}
+
+		if (!requests || requests.length === 0) {
+			return res.status(400).json(failure("No payment requests provided"));
+		}
+
+		const result = await createBulkPaymentRequestsService({
+			requests,
+			projectId,
+			projectName,
+			projectDescription,
+			createdBy: req.user.userId,
+		});
+
+		res.status(201).json(
+			success(
+				{
+					payments: result.payments,
+					paymentGroupId: result.projectId,
+					projectId: result.projectId, // Keep both for compatibility
+					totalPayments: result.payments.length,
+				},
+				"Payment requests created successfully"
+			)
+		);
+	} catch (err: any) {
+		console.error("Error creating payment requests:", err);
 		res
-			.status(201)
-			.json(success(data, "Payment requests created successfully"));
-	} catch (err) {
-		res.status(500).json(failure("Failed to create payment requests", err));
+			.status(500)
+			.json(failure("Failed to create payment requests", err.message || err));
 	}
 };
 
@@ -70,5 +101,21 @@ export const getPendingPaymentsByProject = async (
 		res.json(success(data));
 	} catch (err) {
 		res.status(500).json(failure("Failed to fetch pending payments", err));
+	}
+};
+
+export const getPaymentsByGroup = async (
+	req: RequestWithUser,
+	res: Response
+) => {
+	try {
+		const groupId = parseInt(req.params.groupId);
+		if (isNaN(groupId)) {
+			return res.status(400).json(failure("Invalid payment group ID"));
+		}
+		const data = await getPaymentsByGroupIdService(groupId);
+		res.json(success(data));
+	} catch (err) {
+		res.status(500).json(failure("Failed to fetch payments for group", err));
 	}
 };
