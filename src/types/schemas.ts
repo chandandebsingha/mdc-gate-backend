@@ -57,8 +57,14 @@ export const createPaymentRequestSchema = z.object({
 // Visitors
 export const approveVisitorSchema = z.object({
 	visitorName: z.string().min(1),
+	visitorPhone: z.string().min(1),
+	visitorType: z.string().default("guest"),
 	vehicleNumber: z.string().optional(),
 	date: z.string().refine((v) => !isNaN(Date.parse(v)), "Invalid date"),
+	timeOfVisit: z.string().optional(),
+	visitEndTime: z.string().optional(),
+	note: z.string().optional(),
+	otp: z.string().optional(),
 });
 
 // Family members

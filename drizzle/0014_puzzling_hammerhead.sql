@@ -1,0 +1,1 @@
+ALTER TABLE "visitors" ALTER COLUMN "visitor_phone" SET DATA TYPE varchar(20);

@@ -9,17 +9,50 @@ import { RequestWithUser } from "../types";
 export const approveVisitor = async (req: RequestWithUser, res: Response) => {
 	try {
 		const userId = req.user!.userId;
-		const { visitorName, vehicleNumber, date } = req.body as {
+		const {
+			visitorName,
+			visitorPhone,
+			visitorType,
+			vehicleNumber,
+			date,
+			timeOfVisit,
+			visitEndTime,
+			note,
+			otp,
+		} = req.body as {
 			visitorName: string;
+			visitorPhone: string;
+			visitorType?: string;
 			vehicleNumber?: string;
 			date: string;
+			timeOfVisit?: string;
+			visitEndTime?: string;
+			note?: string;
+			otp?: string;
 		};
-		const data = await approveVisitorService({
+		const visitDate = new Date(date);
+		const payload = {
 			userId,
 			visitorName,
+			visitorPhone,
+			visitorType: visitorType || "guest",
 			vehicleNumber,
-			date: new Date(date) as any,
-		});
+			dateOfVisit: visitDate.toISOString().split("T")[0] as any,
+			timeOfVisit:
+				timeOfVisit ||
+				visitDate.toLocaleTimeString("en-US", {
+					hour: "2-digit",
+					minute: "2-digit",
+				}),
+			visitEndTime,
+			note,
+			otp,
+		};
+		console.log(
+			"Creating visitor with payload:",
+			JSON.stringify(payload, null, 2)
+		);
+		const data = await approveVisitorService(payload);
 		res.status(201).json(success(data, "Visitor approved"));
 	} catch (err) {
 		res.status(500).json(failure("Failed to approve visitor", err));
