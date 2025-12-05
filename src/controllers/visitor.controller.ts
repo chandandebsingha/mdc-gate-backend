@@ -3,6 +3,7 @@ import { success, failure } from "../utils/response";
 import {
 	approveVisitorService,
 	listVisitorsService,
+	giveEntryService,
 } from "../services/visitor.service";
 import { RequestWithUser } from "../types";
 
@@ -66,5 +67,16 @@ export const listVisitors = async (req: RequestWithUser, res: Response) => {
 		res.json(success(data));
 	} catch (err) {
 		res.status(500).json(failure("Failed to fetch visitors", err));
+	}
+};
+
+export const giveEntry = async (req: RequestWithUser, res: Response) => {
+	try {
+		const guardUserId = req.user!.userId;
+		const visitorId = parseInt(req.params.id, 10);
+		const data = await giveEntryService(visitorId, guardUserId);
+		res.json(success(data, "Visitor entry recorded"));
+	} catch (err) {
+		res.status(500).json(failure("Failed to record entry", err));
 	}
 };
