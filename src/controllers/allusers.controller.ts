@@ -6,7 +6,10 @@ import { userDetails } from "../db/schema/userDetails";
 import { eq } from "drizzle-orm";
 import { failure, success } from "../utils/response";
 
-export async function getAllUsersOfSociety(req: RequestWithUser, res: Response) {
+export async function getAllUsersOfSociety(
+	req: RequestWithUser,
+	res: Response
+) {
 	try {
 		// Get societyId from user token or query
 		const societyId = req.user?.societyId || req.query.societyId;
