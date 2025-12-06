@@ -5,8 +5,28 @@ import {
 	loginService,
 	registerService,
 	superAdminLoginService,
+	firebaseLoginService,
 } from "../services/auth.service";
 import { getUserDetailsByUserId } from "../services/userDetails.service";
+import * as admin from "firebase-admin";
+
+// Initialize Firebase Admin if credentials exist
+let firebaseApp: admin.app.App | null = null;
+try {
+	const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+	if (serviceAccountJson) {
+		const serviceAccount = JSON.parse(serviceAccountJson);
+		firebaseApp = admin.initializeApp({
+			credential: admin.credential.cert(serviceAccount),
+		});
+	}
+} catch (err) {
+	console.warn(
+		"Firebase Admin SDK not initialized (expected if not configured):",
+		err
+	);
+}
+
 // GET /api/auth/me
 export async function getMe(req: any, res: Response) {
 	try {
@@ -88,5 +108,39 @@ export async function superAdminLogin(req: Request, res: Response) {
 	} catch (err: any) {
 		const status = err?.status || 401;
 		res.status(status).json(failure(err.message || "Access denied", err));
+	}
+}
+
+export async function firebaseLogin(req: Request, res: Response) {
+	try {
+		if (!firebaseApp) {
+			return res
+				.status(503)
+				.json(failure("Firebase is not configured on this server"));
+		}
+
+		const { idToken } = req.body;
+		if (!idToken) {
+			return res.status(400).json(failure("Missing idToken"));
+		}
+
+		// Verify the Firebase ID token
+		const decodedToken = await admin.auth(firebaseApp).verifyIdToken(idToken);
+		const { uid, email, name } = decodedToken;
+
+		// Exchange Firebase token for app session token
+		const data = await firebaseLoginService({
+			firebaseUid: uid,
+			email: email || "",
+			name: name,
+		});
+
+		res.json(success(data, "Firebase login successful"));
+	} catch (err: any) {
+		console.error("Firebase login error:", err);
+		const status = err?.code === "auth/argument-error" ? 401 : 500;
+		res
+			.status(status)
+			.json(failure(err.message || "Firebase authentication failed", err));
 	}
 }
