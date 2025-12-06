@@ -12,11 +12,30 @@ import { RequestWithUser } from "../types";
 export const createPayment = async (req: RequestWithUser, res: Response) => {
 	try {
 		const userId = req.user!.userId;
-		const { amount, paymentType } = req.body as {
+		const { amount, paymentType, paymentGroupId: rawGroupId } = req.body as {
 			amount: string;
 			paymentType: string;
+			paymentGroupId?: number | string;
 		};
-		const data = await createPaymentService({ userId, amount, paymentType });
+
+		const societyId = req.user?.societyId;
+		const paymentGroupId = rawGroupId !== undefined ? Number(rawGroupId) : undefined;
+
+		if (!societyId) {
+			return res.status(400).json(failure("Society ID not found on user"));
+		}
+
+		if (!paymentGroupId || Number.isNaN(paymentGroupId)) {
+			return res.status(400).json(failure("paymentGroupId is required and must be a number"));
+		}
+
+		const data = await createPaymentService({
+			userId,
+			societyId,
+			amount,
+			paymentType,
+			paymentGroupId,
+		});
 		res.status(201).json(success(data, "Payment initiated"));
 	} catch (err) {
 		res.status(500).json(failure("Failed to initiate payment", err));

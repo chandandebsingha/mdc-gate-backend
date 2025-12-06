@@ -7,6 +7,7 @@ export interface AuthPayload {
 	userId: number;
 	email?: string;
 	role?: string;
+	societyId?: number; // optional, populated when token includes society scope
 }
 
 export interface RequestWithUser extends Request {
